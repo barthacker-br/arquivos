@@ -1,0 +1,10 @@
+{
+  "bitcoin": {
+    "wallet_address": "sua_carteira_bitcoin_aqui",
+    "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA7mxO0AAAgAElEQVR4Xu29d5AeZf... (base64_encoded_image_data)"
+  },
+  "bnb": {
+    "wallet_address": "sua_carteira_bnb_aqui",
+    "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAA7mxO0AAAgAElEQVR4Xu29d5AeZf... (base64_encoded_image_data)"
+  }
+}

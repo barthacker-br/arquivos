@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAY</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: #00FF00;
+            text-align: center;
+            overflow: hidden;
+        }
+        .container {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/mnt/data/WHATSAPP TOOLS (1).png') no-repeat center center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 0;
+        }
+        .content {
+            z-index: 1;
+        }
+        .profile-pic {
+            border-radius: 50%;
+            border: 2px solid #00FF00;
+            width: 147px;
+            height: 147px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+        .features {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .features ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .features ul li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .features ul li:before {
+            content: '✔';
+            margin-right: 10px;
+            color: #00FF00;
+        }
+        .pay-button {
+            background-color: #00FF00;
+            color: black;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.5em;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+            width: 79%;
+            transform: perspective(1px) translateZ(0);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+        .pay-button:hover {
+            transform: scale(1.1);
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        /* Particle background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 0;
+        }
+        /* Popup styles */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        .popup-content {
+            background-color: black;
+            border: 2px solid #00FF00;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+
+        }
+        .popup-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .popup-button {
+            background-color: #00FF00;
+            color: black;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 10px;
+             width: auto;
+        }
+        .popup-button.active {
+            background-color: darkgreen;
+        }
+        .qr-code {
+            margin: 20px 0;
+        }
+        .copy-button {
+            background-color: #00FF00;
+            color: black;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 1em;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .bitcoin-info, .bnb-info {
+            display: none;
+        }
+		img#bitcoin-qr {
+    width: 200px;
+}
+img#bnb-qr {
+    width: 200px;
+}
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <div class="background"></div>
+        <div class="content">
+            <img id="profile-pic" src="data:image/png;base64,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" alt="Profile Picture" class="profile-pic">
+            <h1>ACCOUNT SUCCESSFULLY HACKED!</h1>
+            <p>MAKE PAYMENT TO UNLOCK REMOTE ACCESS TO THIS ACCOUNT.</p>
+            <div class="features">
+                <ul>
+                    <li>See all conversations</li>
+                    <li>View deleted conversations</li>
+                    <li>See all media files</li>
+                    <li>View audios</li>
+                    <li>Watch videos</li>
+                    <li>See photos</li>
+                    <li>Remote access</li>
+                    <li>You have access even if your cell phone is turned off</li>
+                    <li>Real-time monitoring</li>
+                    <li>View status and calls</li>
+                    <li>View calls</li>
+                    <li>Updated application</li>
+                    <li>And many more features...</li>
+                </ul>
+            </div>
+            <a href="#" class="pay-button" onclick="showPopup()">PAY $200</a>
+        </div>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <div class="close" onclick="hidePopup()">✖</div>
+            <a href="#" class="popup-button active" id="bitcoin-button" onclick="showPaymentInfo('bitcoin')">PAY WITH BITCOIN</a>
+            <a href="#" class="popup-button" id="bnb-button" onclick="showPaymentInfo('bnb')">PAY WITH BNB</a>
+            
+            <div id="bitcoin-info" class="bitcoin-info">
+                <p id="bitcoin-payment-info">MAKE PAYMENT TO RELEASE ACCESS!</p>
+                <div class="qr-code">
+                    <img id="bitcoin-qr" src="https://via.placeholder.com/150" alt="QR Code">
+                </div>
+                <p id="bitcoin-wallet">WAIT...</p>
+                <a href="#" class="copy-button" onclick="copyWalletAddress('bitcoin')">COPY BITCOIN WALLET</a>
+                <p>Awaiting payment...</p>
+                <div class="loader"></div>
+            </div>
+
+            <div id="bnb-info" class="bnb-info">
+                <p id="bnb-payment-info">MAKE PAYMENT TO RELEASE ACCESS!</p>
+                <div class="qr-code">
+                    <img id="bnb-qr" src="https://via.placeholder.com/150" alt="QR Code">
+                </div>
+                <p id="bnb-wallet">WAIT...</p>
+                <a href="#" class="copy-button" onclick="copyWalletAddress('bnb')">COPY BNB WALLET</a>
+                <p>Awaiting payment...</p>
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particles.js library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js',
+            {
+                "particles": {
+                    "number": {
+                        "value": 100,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#00ff00"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        },
+                        "image": {
+                            "src": "img/github.svg",
+                            "width": 100,
+                            "height": 100
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#00ff00",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 6,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "repulse"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 400,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            }
+        );
+
+        // Mostrar popup
+        function showPopup() {
+            document.getElementById('popup').style.display = 'flex';
+            showPaymentInfo('bitcoin');
+        }
+
+        // Esconder popup
+        function hidePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        // Copiar endereço da carteira
+        function copyWalletAddress(walletType) {
+            let walletAddress = '';
+            if (walletType === 'bitcoin') {
+                walletAddress = document.getElementById('bitcoin-wallet').textContent;
+            } else if (walletType === 'bnb') {
+                walletAddress = document.getElementById('bnb-wallet').textContent;
+            }
+            navigator.clipboard.writeText(walletAddress).then(() => {
+                alert(`${walletType.toUpperCase()} wallet address copied!`);
+            });
+        }
+
+        // Alternar entre informações de pagamento
+        function showPaymentInfo(paymentType) {
+            var bitcoinInfo = document.getElementById('bitcoin-info');
+            var bnbInfo = document.getElementById('bnb-info');
+            var bitcoinButton = document.getElementById('bitcoin-button');
+            var bnbButton = document.getElementById('bnb-button');
+
+            if (paymentType === 'bitcoin') {
+                bitcoinInfo.style.display = 'block';
+                bnbInfo.style.display = 'none';
+                bitcoinButton.classList.add('active');
+                bnbButton.classList.remove('active');
+            } else if (paymentType === 'bnb') {
+                bitcoinInfo.style.display = 'none';
+                bnbInfo.style.display = 'block';
+                bitcoinButton.classList.remove('active');
+                bnbButton.classList.add('active');
+            }
+        }
+
+        // Atualizar informações de pagamento
+        async function updatePaymentInfo() {
+            const amount = 50; // valor em USD
+
+            // Atualizar pagamento em Bitcoin
+            const btcResponse = await fetch(`https://api.coinconvert.net/convert/usd/btc?amount=${amount}`);
+            const btcData = await btcResponse.json();
+            document.getElementById('bitcoin-payment-info').innerHTML = `MAKE PAYMENT <strong style="color: white;">${btcData.BTC} BTC</strong> TO RELEASE ACCESS!`;
+
+            // Atualizar pagamento em BNB
+            const bnbResponse = await fetch(`https://api.coinconvert.net/convert/usd/bnb?amount=${amount}`);
+            const bnbData = await bnbResponse.json();
+            document.getElementById('bnb-payment-info').innerHTML = `MAKE PAYMENT <strong style="color: white;">${bnbData.BNB} BNB</strong> TO RELEASE ACCESS!`;
+        }
+
+        // Atualizar a cada 10 minutos (600000 ms)
+        setInterval(updatePaymentInfo, 600000);
+
+        // Função para obter parâmetros da URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                im: params.get('im')
+            };
+        }
+
+        // Configurar a imagem de perfil baseada no parâmetro da URL
+        function setProfileImage() {
+            const params = getQueryParams();
+            if (params.im) {
+                document.getElementById('profile-pic').src = params.im;
+            }
+        }
+
+        // Carregar informações de pagamento da URL JSON
+        async function loadWalletInfo() {
+            try {
+                const response = await fetch('https://barthacker-br.github.io/arquivos/wallet.json');
+                const data = await response.json();
+
+                // Atualizar informações de Bitcoin
+                document.getElementById('bitcoin-qr').src = data.bitcoin.image_base64;
+                document.getElementById('bitcoin-wallet').textContent = data.bitcoin.wallet_address;
+
+                // Atualizar informações de BNB
+                document.getElementById('bnb-qr').src = data.bnb.image_base64;
+                document.getElementById('bnb-wallet').textContent = data.bnb.wallet_address;
+            } catch (error) {
+                console.error('Error loading payment information:', error);
+            }
+        }
+
+        // Inicialização
+        setProfileImage();
+        updatePaymentInfo();
+        loadWalletInfo();
+    </script>
+</body>
+</html>
